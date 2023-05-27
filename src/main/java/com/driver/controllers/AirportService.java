@@ -78,6 +78,7 @@ public class AirportService {
 
 
         Flight flight = airportRepository.getFlightById(flightId);
+        if(flight == null)return "FAILURE";
         int currbookings = airportRepository.getCurrBookingsOfFlight(flightId);
         if(currbookings >= flight.getMaxCapacity())return "FAILURE";
 
@@ -103,6 +104,16 @@ public class AirportService {
     public String getAirportNameFromFlightId(Integer flightId) {
         Flight flight = airportRepository.getFlightById(flightId);
         if(flight == null) return null;
+        City city = flight.getFromCity();
+        if(city == City.CHANDIGARH)return "CA";
+//        else if(city = City.BANGLORE)return "";
+//        else if(city = City.BANGLORE)return "";
+//        else if(city = City.BANGLORE)return "";
+//        else if(city = City.BANGLORE)return "";
+//        else if(city = City.BANGLORE)return "";
+//        else if(city = City.BANGLORE)return "";
+        return city.name();
+
         return flight.getFromCity().name();
 
     }

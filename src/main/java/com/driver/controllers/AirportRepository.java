@@ -25,7 +25,9 @@ public class AirportRepository {
     }
 
     public void addFlight(Flight flight) {
+
         flightMap.put(flight.getFlightId(), flight);
+
     }
 
     public Collection<Flight> getAllFlights() {
@@ -73,7 +75,7 @@ public class AirportRepository {
     }
 
     public boolean passengerAlreadyBookedThisFlight(Integer flightId, Integer passengerId) {
-        if(!flightCustFareMap.get(flightId).containsKey(passengerId)){
+        if(!flightCustFareMap.containsKey(flightId) || !flightCustFareMap.get(flightId).containsKey(passengerId)){
             return false;
         }
         return true;
