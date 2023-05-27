@@ -4,6 +4,7 @@ import com.driver.model.Airport;
 import com.driver.model.City;
 import com.driver.model.Flight;
 import com.driver.model.Passenger;
+import io.swagger.models.auth.In;
 
 import java.util.Date;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class AirportService {
     public int getNumberOfPeopleOn(Date date, String airportName) {
         int ans = 0;
         Airport airport = airportRepository.getAirportByName(airportName);
+        if(airport == null)return 0;
         for(Flight flight : airportRepository.getAllFlights()){
             if(flight.getFlightDate().compareTo(date) == 0 && (flight.getFromCity()==airport.getCity() ||
             flight.getToCity() == airport.getCity())){
@@ -81,25 +83,21 @@ public class AirportService {
 
 
         airportRepository.bookATicket(flightId,passengerId);
-        airportRepository.addCustFareToFlightCustFareMap(flightId,passengerId,calculateFlightFare(flightId));
+
         return "SUCCESS";
     }
 
 
     public String cancelATicket(Integer flightId, Integer passengerId) {
         if(!airportRepository.passengerFlightMapHasKeyValuePair(flightId,passengerId))
-            return "FALSE";
+            return "FAILURE";
         airportRepository.cancelATicket(flightId, passengerId);
-        airportRepository.deleteCustFareToFlightCustFareMap(flightId,passengerId);
+
         return "SUCCESS";
     }
 
     public int countOfBookingsDoneByPassengerAllCombined(Integer passengerId) {
-        int count = 0;
-        for(Integer passId : airportRepository.getAllPassengers()){
-            if(passId.equals(passengerId))count++;
-        }
-        return count;
+        return airportRepository.countOfBookingsDoneByPassengerAllCombined(passengerId);
     }
 
     public String getAirportNameFromFlightId(Integer flightId) {

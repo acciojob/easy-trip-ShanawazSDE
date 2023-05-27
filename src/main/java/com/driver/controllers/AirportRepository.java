@@ -3,6 +3,7 @@ package com.driver.controllers;
 import com.driver.model.Airport;
 import com.driver.model.Flight;
 import com.driver.model.Passenger;
+import io.swagger.models.auth.In;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class AirportRepository {
     Map<String,Airport> airportMap = new HashMap<>();
     Map<Integer,Flight> flightMap = new HashMap<>();
     Map<Integer,Passenger> passengerMap = new HashMap<>();
-    Map<Integer, Integer> passengerFlightMap = new HashMap<>();
+    //Map<Integer, Integer> passengerFlightMap = new HashMap<>();
     Map<Integer,Map<Integer,Integer>> flightCustFareMap = new HashMap<>();
     public void addAirport(Airport airport) {
         airportMap.put(airport.getAirportName(),airport);
@@ -39,9 +40,6 @@ public class AirportRepository {
         return airportMap.get(airportName);
     }
 
-    public Set<Integer> getPassengersWhoBookedFlights() {
-        return passengerFlightMap.keySet();
-    }
 
     public Flight getFlightById(Integer flightId) {
         if(flightMap.containsKey(flightId))
@@ -51,51 +49,50 @@ public class AirportRepository {
     }
 
     public int getCurrBookingsOfFlight(Integer flightId) {
-        int count = 0;
-        for(int fid : passengerFlightMap.values()){
-            if(fid == flightId)count++;
-        }
-        return count;
+
+
+       return flightCustFareMap.get(flightId).size();
     }
 
     public void bookATicket(Integer flightId, Integer passengerId) {
-        passengerFlightMap.put(passengerId,flightId);
+        flightCustFareMap.computeIfAbsent(flightId, fid -> new HashMap<Integer,Integer>());
+        Map<Integer, Integer> custFareMap = flightCustFareMap.get(flightId);
+        custFareMap.put(passengerId,3000+getCurrBookingsOfFlight(flightId)*50);
 
     }
 
     public boolean passengerFlightMapHasKeyValuePair(Integer flightId, Integer passengerId) {
-        if(!passengerFlightMap.containsKey(passengerId) || !passengerFlightMap.get(passengerId).equals(flightId))
+        if(!flightCustFareMap.containsKey(flightId) || !flightCustFareMap.get(flightId).containsKey(passengerId))
             return false;
         return true;
     }
 
     public void cancelATicket(Integer flightId, Integer passengerId) {
-        passengerFlightMap.remove(passengerId);
+        flightCustFareMap.get(flightId).remove(passengerId);
+
     }
 
     public boolean passengerAlreadyBookedThisFlight(Integer flightId, Integer passengerId) {
-        if(!passengerFlightMap.containsKey(passengerId) || !passengerFlightMap.get(passengerId).equals(flightId)){
+        if(!flightCustFareMap.get(flightId).containsKey(passengerId)){
             return false;
         }
         return true;
     }
 
-    public Set<Integer> getAllPassengers() {
-        return passengerFlightMap.keySet();
-    }
+
 
     public Map<Integer, Integer> getCustFareMapForFlight(Integer flightId) {
         return flightCustFareMap.get(flightId);
     }
 
-    public void addCustFareToFlightCustFareMap(Integer flightId, Integer passengerId, int flightFare) {
-        flightCustFareMap.computeIfAbsent(flightId,fid -> new HashMap<Integer,Integer>());
-        Map<Integer,Integer> custFareMap = flightCustFareMap.get(flightId);
-        custFareMap.put(passengerId,flightFare);
-    }
 
-    public void deleteCustFareToFlightCustFareMap(Integer flightId, Integer passengerId) {
-        Map<Integer,Integer> custFareMap = flightCustFareMap.get(flightId);
-        custFareMap.remove(passengerId);
+
+
+    public int countOfBookingsDoneByPassengerAllCombined(Integer passengerId) {
+        int count = 0;
+        for(Map<Integer,Integer> map : flightCustFareMap.values()){
+            if(map.containsKey(passengerId))count++;
+        }
+        return count;
     }
 }
