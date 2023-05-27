@@ -27,6 +27,8 @@ public class AirportRepository {
     public void addFlight(Flight flight) {
 
         flightMap.put(flight.getFlightId(), flight);
+        if(!flightCustFareMap.containsKey(flight.getFlightId()))
+            flightCustFareMap.put(flight.getFlightId(),new HashMap<Integer,Integer>());
 
     }
 
@@ -57,10 +59,11 @@ public class AirportRepository {
     }
 
     public void bookATicket(Integer flightId, Integer passengerId) {
-        flightCustFareMap.computeIfAbsent(flightId, fid -> new HashMap<Integer,Integer>());
-        Map<Integer, Integer> custFareMap = flightCustFareMap.get(flightId);
-        custFareMap.put(passengerId,3000+getCurrBookingsOfFlight(flightId)*50);
-
+        //flightCustFareMap.computeIfAbsent(flightId, fid -> new HashMap<Integer,Integer>());
+        if(flightMap.containsKey(flightId) && passengerMap.containsKey(passengerId)) {
+            Map<Integer, Integer> custFareMap = flightCustFareMap.get(flightId);
+            custFareMap.put(passengerId, 3000 + getCurrBookingsOfFlight(flightId) * 50);
+        }
     }
 
     public boolean passengerFlightMapHasKeyValuePair(Integer flightId, Integer passengerId) {
