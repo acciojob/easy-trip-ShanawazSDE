@@ -114,7 +114,7 @@ public class AirportService {
 //        else if(city = City.BANGLORE)return "";
         return city.name();
 
-        return flight.getFromCity().name();
+       // return flight.getFromCity().name();
 
     }
 
