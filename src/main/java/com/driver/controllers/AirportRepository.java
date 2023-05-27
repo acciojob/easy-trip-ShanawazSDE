@@ -75,10 +75,9 @@ public class AirportRepository {
     }
 
     public boolean passengerAlreadyBookedThisFlight(Integer flightId, Integer passengerId) {
-        if(!flightCustFareMap.containsKey(flightId) || !flightCustFareMap.get(flightId).containsKey(passengerId)){
-            return false;
-        }
-        return true;
+       if(flightCustFareMap.containsKey(flightId) && flightCustFareMap.get(flightId).containsKey(passengerId))
+           return true;
+       return false;
     }
 
 
